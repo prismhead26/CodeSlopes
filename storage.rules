@@ -1,0 +1,35 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null &&
+             firestore.get(/databases/(default)/documents/admins/$(request.auth.uid)).data != null;
+    }
+
+    // Blog post images
+    match /posts/{postId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() &&
+                   request.resource.size < 5 * 1024 * 1024 && // 5MB max
+                   request.resource.contentType.matches('image/.*');
+    }
+
+    // User avatars
+    match /avatars/{userId}/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null &&
+                   request.auth.uid == userId &&
+                   request.resource.size < 2 * 1024 * 1024 && // 2MB max
+                   request.resource.contentType.matches('image/.*');
+    }
+
+    // General images
+    match /images/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin() &&
+                   request.resource.size < 5 * 1024 * 1024;
+    }
+  }
+}
