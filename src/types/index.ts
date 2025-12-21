@@ -1,0 +1,87 @@
+export interface User {
+  uid: string;
+  email: string;
+  displayName: string;
+  photoURL?: string;
+  bio?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  coverImage?: string;
+  category: string;
+  tags: string[];
+  published: boolean;
+  publishedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  authorId: string;
+  authorName: string;
+  authorPhoto?: string;
+  readingTime: number; // in minutes
+  views: number;
+  likes: number;
+}
+
+export interface Comment {
+  id: string;
+  postId: string;
+  userId: string;
+  userName: string;
+  userPhoto?: string;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+  parentId?: string; // for nested comments
+  likes: number;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  color?: string;
+  icon?: string;
+  postCount: number;
+  createdAt: Date;
+}
+
+export interface Tag {
+  id: string;
+  name: string;
+  slug: string;
+  postCount: number;
+  createdAt: Date;
+}
+
+export interface AIRequest {
+  prompt: string;
+  context?: string;
+  maxTokens?: number;
+  temperature?: number;
+}
+
+export interface AIResponse {
+  content: string;
+  model: string;
+  usage?: {
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+  };
+}
+
+export interface Analytics {
+  postId?: string;
+  event: 'view' | 'like' | 'comment' | 'share';
+  timestamp: Date;
+  userId?: string;
+  metadata?: Record<string, unknown>;
+}
