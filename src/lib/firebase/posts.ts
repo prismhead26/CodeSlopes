@@ -52,7 +52,7 @@ export const createPost = async (postData: Omit<BlogPost, 'id' | 'createdAt' | '
 export const updatePost = async (id: string, postData: Partial<BlogPost>) => {
   try {
     const postRef = doc(db, 'posts', id);
-    const updateData = {
+    const updateData: DocumentData = {
       ...postData,
       updatedAt: Timestamp.now(),
     };
