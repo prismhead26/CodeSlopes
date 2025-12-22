@@ -16,6 +16,7 @@
     "firebase:deploy": "firebase deploy"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@tiptap/extension-code-block-lowlight": "^2.10.4",
     "@tiptap/extension-image": "^2.10.4",
     "@tiptap/extension-link": "^2.10.4",

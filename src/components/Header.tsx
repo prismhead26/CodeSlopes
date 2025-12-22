@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { signOut } from '@/lib/firebase/auth';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import ThemeToggle from './ThemeToggle';
 
 export default function Header() {
   const { user, isAdmin } = useAuth();
@@ -29,21 +30,23 @@ export default function Header() {
           </Link>
 
           <div className="flex items-center gap-6">
-            <Link href="/blog" className="hover:text-blue-600 transition-colors">
+            <Link href="/blog" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
               Blog
             </Link>
-            <Link href="/about" className="hover:text-blue-600 transition-colors">
+            <Link href="/about" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
               About
             </Link>
 
             {isAdmin && (
               <Link
                 href="/admin"
-                className="hover:text-blue-600 transition-colors font-semibold"
+                className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-semibold"
               >
                 Admin
               </Link>
             )}
+
+            <ThemeToggle />
 
             {user ? (
               <div className="flex items-center gap-4">

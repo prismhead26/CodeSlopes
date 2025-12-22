@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 export const metadata: Metadata = {
   title: "CopeSlopes - Tech & Lifestyle Blog",
@@ -20,10 +22,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="font-sans antialiased">
-        {children}
-        <Toaster position="top-right" />
+        <ThemeProvider>
+          <ErrorBoundary>
+            {children}
+            <Toaster position="top-right" />
+          </ErrorBoundary>
+        </ThemeProvider>
       </body>
     </html>
   );
