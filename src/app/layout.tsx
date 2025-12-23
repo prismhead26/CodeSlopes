@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
-import { ThemeProvider } from "@/contexts/ThemeContext";
+import { SeasonalThemeProvider } from "@/contexts/SeasonalThemeContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import SeasonalParticles from "@/components/SeasonalParticles";
 
 export const metadata: Metadata = {
   title: "CopeSlopes - Tech & Lifestyle Blog",
@@ -24,12 +25,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="font-sans antialiased">
-        <ThemeProvider>
+        <SeasonalThemeProvider>
           <ErrorBoundary>
+            <SeasonalParticles />
             {children}
             <Toaster position="top-right" />
           </ErrorBoundary>
-        </ThemeProvider>
+        </SeasonalThemeProvider>
       </body>
     </html>
   );

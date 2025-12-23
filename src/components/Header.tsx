@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { signOut } from '@/lib/firebase/auth';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import ThemeToggle from './ThemeToggle';
+import ThemeControl from './ThemeControl';
 
 export default function Header() {
   const { user, isAdmin } = useAuth();
@@ -46,7 +46,7 @@ export default function Header() {
               </Link>
             )}
 
-            <ThemeToggle />
+            <ThemeControl />
 
             {user ? (
               <div className="flex items-center gap-4">

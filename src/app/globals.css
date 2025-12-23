@@ -61,3 +61,105 @@ body {
 .ProseMirror:focus {
   @apply outline-none;
 }
+
+/* Seasonal Particle Animations */
+.particle {
+  position: absolute;
+  pointer-events: none;
+  animation: fall linear infinite;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-100px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Snow particles */
+.particle-snow {
+  width: 10px;
+  height: 10px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+/* Falling leaves */
+.particle-leaves {
+  width: 15px;
+  height: 15px;
+  background: linear-gradient(45deg, #ea580c, #dc2626);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  animation: fall-leaves linear infinite;
+}
+
+@keyframes fall-leaves {
+  0% {
+    transform: translateY(-100px) rotate(0deg) translateX(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(50vh) rotate(180deg) translateX(50px);
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg) translateX(0);
+    opacity: 0;
+  }
+}
+
+/* Cherry blossom petals */
+.particle-petals {
+  width: 12px;
+  height: 12px;
+  background: radial-gradient(circle, #fecdd3, #ec4899);
+  border-radius: 50% 0 50% 0;
+  animation: fall-petals linear infinite;
+}
+
+@keyframes fall-petals {
+  0% {
+    transform: translateY(-100px) rotate(0deg) translateX(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(50vh) rotate(180deg) translateX(-30px);
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg) translateX(0);
+    opacity: 0;
+  }
+}
+
+/* Fireflies */
+.particle-fireflies {
+  width: 8px;
+  height: 8px;
+  background: #fbbf24;
+  border-radius: 50%;
+  box-shadow: 0 0 15px #fbbf24;
+  animation: firefly-float linear infinite;
+}
+
+@keyframes firefly-float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.8;
+  }
+  25% {
+    transform: translate(30px, -20px) scale(1.2);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(10px, -40px) scale(0.8);
+    opacity: 0.6;
+  }
+  75% {
+    transform: translate(-20px, -60px) scale(1.1);
+    opacity: 0.9;
+  }
+}
