@@ -75,10 +75,10 @@ export function handleError(error: unknown): { message: string; code?: string } 
 /**
  * Async Error Handler for API Routes
  */
-export function asyncHandler<T>(
-  fn: (...args: any[]) => Promise<T>
-): (...args: any[]) => Promise<T | { error: string }> {
-  return async (...args: any[]) => {
+export function asyncHandler<T, TArgs extends unknown[]>(
+  fn: (...args: TArgs) => Promise<T>
+): (...args: TArgs) => Promise<T | { error: string }> {
+  return async (...args: TArgs) => {
     try {
       return await fn(...args);
     } catch (error) {
@@ -92,7 +92,7 @@ export function asyncHandler<T>(
 /**
  * Log errors in production to external service
  */
-export function logError(error: Error, context?: Record<string, any>) {
+export function logError(error: Error, context?: Record<string, unknown>) {
   // In development, log to console
   if (process.env.NODE_ENV === 'development') {
     console.error('Error:', error);

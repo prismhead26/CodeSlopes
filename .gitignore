@@ -30,6 +30,11 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.env.local
+.env.development
+.env.production
+.env.test
+.runtimeconfig.json
 
 # vercel
 .vercel
@@ -43,3 +48,18 @@ next-env.d.ts
 firebase-debug.log
 firestore-debug.log
 ui-debug.log
+storage-debug.log
+functions-debug.log
+
+# firebase functions
+functions/lib/
+functions/node_modules/
+functions/.runtimeconfig.json
+
+# lighthouse and performance
+lighthouse-report.html
+.lighthouseci/
+size-limit-report.json
+
+# misc reports and logs
+*.log

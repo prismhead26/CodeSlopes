@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)",
+      "Bash(npx firebase deploy --only firestore:rules)",
+      "Bash(npm install:*)",
+      "Bash(firebase deploy:*)",
+      "Bash(firebase login:*)",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)",
+      "Bash(tasklist:*)",
+      "Bash(find:*)",
+      "Bash(npm run build:export:*)",
+      "Bash(npm run clean:*)",
+      "Bash(npm run build:*)"
+    ]
+  }
+}

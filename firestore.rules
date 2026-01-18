@@ -20,25 +20,27 @@ service cloud.firestore {
     match /posts/{postId} {
       allow read: if resource.data.published == true || isAdmin();
       allow create, update, delete: if isAdmin();
-
-      // Comments subcollection
-      match /comments/{commentId} {
-        allow read: if true;
-        allow create: if isSignedIn();
-        allow update, delete: if isOwner(resource.data.userId) || isAdmin();
-      }
     }
 
     // Categories - public read, admin write
     match /categories/{categoryId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow create, update, delete: if isAdmin();
     }
 
     // Tags - public read, admin write
     match /tags/{tagId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Comments - approved read, signed-in write, admin moderate
+    match /comments/{commentId} {
+      // Admins can read all, public can only read approved
+      allow read: if isAdmin() || (resource != null && resource.data.approved == true);
+      allow create: if isSignedIn();
+      allow update: if isOwner(resource.data.userId) || isAdmin();
+      allow delete: if isOwner(resource.data.userId) || isAdmin();
     }
 
     // Admin users
@@ -50,13 +52,21 @@ service cloud.firestore {
     // User profiles
     match /users/{userId} {
       allow read: if true;
-      allow write: if isOwner(userId);
+      allow create, update: if isOwner(userId);
+      allow delete: if isAdmin();
     }
 
-    // Analytics
+    // Analytics - admin read, public can log events
     match /analytics/{docId} {
       allow read: if isAdmin();
-      allow write: if false; // Written by Cloud Functions
+      allow create: if true; // Allow logging from client
+      allow update, delete: if isAdmin();
+    }
+
+    // Site settings - public read, admin write
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
   }
 }

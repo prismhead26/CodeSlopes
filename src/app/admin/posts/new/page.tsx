@@ -4,7 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { createPost, calculateReadingTime } from '@/lib/firebase/posts';
+import { getCategories } from '@/lib/firebase/categories';
+import { Category } from '@/types';
 import RichTextEditor from '@/components/RichTextEditor';
+import ImageUpload from '@/components/admin/ImageUpload';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import toast from 'react-hot-toast';
@@ -13,11 +16,12 @@ export default function NewPostPage() {
   const { user, isAdmin, loading } = useAuth();
   const router = useRouter();
 
+  const [categories, setCategories] = useState<Category[]>([]);
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
   const [content, setContent] = useState('');
   const [excerpt, setExcerpt] = useState('');
-  const [category, setCategory] = useState('tech');
+  const [category, setCategory] = useState('');
   const [tags, setTags] = useState('');
   const [coverImage, setCoverImage] = useState('');
   const [published, setPublished] = useState(false);
@@ -28,6 +32,22 @@ export default function NewPostPage() {
       router.push('/auth/signin');
     }
   }, [user, isAdmin, loading, router]);
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const loadCategories = async () => {
+    const { categories: fetchedCategories, error } = await getCategories();
+    if (error) {
+      toast.error('Error loading categories');
+    } else {
+      setCategories(fetchedCategories);
+      if (fetchedCategories.length > 0 && !category) {
+        setCategory(fetchedCategories[0].slug);
+      }
+    }
+  };
 
   useEffect(() => {
     // Auto-generate slug from title
@@ -175,12 +195,21 @@ export default function NewPostPage() {
                   required
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent dark:bg-gray-800"
                 >
-                  <option value="tech">Tech</option>
-                  <option value="ai">AI</option>
-                  <option value="lifestyle">Lifestyle</option>
-                  <option value="tutorial">Tutorial</option>
-                  <option value="career">Career</option>
+                  {categories.length === 0 ? (
+                    <option value="">No categories available</option>
+                  ) : (
+                    categories.map(cat => (
+                      <option key={cat.id} value={cat.slug}>
+                        {cat.icon} {cat.name}
+                      </option>
+                    ))
+                  )}
                 </select>
+                {categories.length === 0 && (
+                  <p className="mt-1 text-sm text-yellow-600">
+                    Please create categories first in the Categories page
+                  </p>
+                )}
               </div>
 
               <div>
@@ -199,17 +228,29 @@ export default function NewPostPage() {
             </div>
 
             <div>
-              <label htmlFor="coverImage" className="block text-sm font-medium mb-2">
-                Cover Image URL
+              <label className="block text-sm font-medium mb-2">
+                Cover Image
               </label>
-              <input
-                id="coverImage"
-                type="url"
-                value={coverImage}
-                onChange={(e) => setCoverImage(e.target.value)}
-                placeholder="https://example.com/image.jpg"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent dark:bg-gray-800"
+              <ImageUpload
+                currentImage={coverImage}
+                onUploadComplete={setCoverImage}
+                folder="posts"
               />
+              {coverImage && (
+                <div className="mt-2">
+                  <label htmlFor="coverImageUrl" className="block text-xs text-gray-500 mb-1">
+                    Or paste URL directly:
+                  </label>
+                  <input
+                    id="coverImageUrl"
+                    type="url"
+                    value={coverImage}
+                    onChange={(e) => setCoverImage(e.target.value)}
+                    placeholder="https://example.com/image.jpg"
+                    className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent dark:bg-gray-800"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-2">

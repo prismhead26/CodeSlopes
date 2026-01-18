@@ -40,6 +40,7 @@ export interface Comment {
   updatedAt: Date;
   parentId?: string; // for nested comments
   likes: number;
+  approved: boolean; // for comment moderation
 }
 
 export interface Category {
@@ -84,4 +85,29 @@ export interface Analytics {
   timestamp: Date;
   userId?: string;
   metadata?: Record<string, unknown>;
+}
+
+export interface SiteSettings {
+  id: string;
+  siteName: string;
+  tagline: string;
+  description: string;
+  logoUrl?: string;
+  author: {
+    name: string;
+    email: string;
+    bio: string;
+    photo?: string;
+  };
+  social: {
+    github?: string;
+    linkedin?: string;
+    twitter?: string;
+    instagram?: string;
+  };
+  seo: {
+    metaDescription: string;
+    keywords: string[];
+  };
+  updatedAt: Date;
 }
