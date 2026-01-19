@@ -86,11 +86,11 @@ export default function NewPostPage() {
       excerpt,
       category,
       tags: tagArray,
-      coverImage: coverImage || undefined,
+      coverImage: coverImage || null,
       published,
       authorId: user.uid,
       authorName: user.displayName || 'Anonymous',
-      authorPhoto: user.photoURL || undefined,
+      authorPhoto: user.photoURL || null,
       readingTime,
     };
 

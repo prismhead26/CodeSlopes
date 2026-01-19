@@ -101,7 +101,7 @@ export default function EditPostClient() {
       excerpt,
       category,
       tags: tagArray,
-      coverImage: coverImage || undefined,
+      coverImage: coverImage || null,
       published,
       readingTime,
     };
