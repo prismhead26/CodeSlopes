@@ -38,12 +38,11 @@ jobs:
       - name: Enable webframeworks experiment
         run: firebase experiments:enable webframeworks
 
-      - name: Authenticate to Firebase
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        run: echo "Authenticated with Firebase token"
+      - name: Create service account file
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}' > service-account.json
 
       - name: Deploy to Firebase
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          GOOGLE_APPLICATION_CREDENTIALS: ./service-account.json
         run: firebase deploy --except storage --force
