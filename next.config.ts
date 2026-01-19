@@ -18,6 +18,16 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['@tiptap/react', '@tiptap/starter-kit'],
   },
+
+  // Exclude functions directory from Next.js build
+  webpack: (config, { isServer }) => {
+    // Ignore the functions directory completely
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: ['**/node_modules/**', '**/functions/**', '**/.git/**'],
+    };
+    return config;
+  },
 };
 
 export default nextConfig;
