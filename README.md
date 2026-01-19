@@ -2,6 +2,10 @@
 
 A modern, full-featured tech and lifestyle blog with a powerful admin dashboard. Built with Next.js 15, Firebase, and TypeScript.
 
+[![Deploy to Firebase](https://github.com/prismhead26/CodeSlopes/actions/workflows/deploy.yml/badge.svg)](https://github.com/prismhead26/CodeSlopes/actions/workflows/deploy.yml)
+
+**Live Site:** [https://codeslopes.web.app](https://codeslopes.web.app)
+
 ## 🚀 Quick Start (TL;DR)
 
 ```bash
