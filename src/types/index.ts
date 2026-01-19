@@ -14,7 +14,7 @@ export interface BlogPost {
   slug: string;
   content: string;
   excerpt: string;
-  coverImage?: string;
+  coverImage?: string | null;
   category: string;
   tags: string[];
   published: boolean;
@@ -23,7 +23,7 @@ export interface BlogPost {
   updatedAt: Date;
   authorId: string;
   authorName: string;
-  authorPhoto?: string;
+  authorPhoto?: string | null;
   readingTime: number; // in minutes
   views: number;
   likes: number;
