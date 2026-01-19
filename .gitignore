@@ -63,3 +63,4 @@ size-limit-report.json
 
 # misc reports and logs
 *.log
+# Deployment test
