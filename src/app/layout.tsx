@@ -3,6 +3,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import AuthGuard from "@/components/AuthGuard";
 
 export const metadata: Metadata = {
   title: "CopeSlopes - Tech & Lifestyle Blog",
@@ -26,7 +27,9 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <ThemeProvider>
           <ErrorBoundary>
-            {children}
+            <AuthGuard>
+              {children}
+            </AuthGuard>
             <Toaster position="top-right" />
           </ErrorBoundary>
         </ThemeProvider>

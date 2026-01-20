@@ -34,7 +34,7 @@ export interface Comment {
   postId: string;
   userId: string;
   userName: string;
-  userPhoto?: string;
+  userPhoto?: string | null;
   content: string;
   createdAt: Date;
   updatedAt: Date;

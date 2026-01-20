@@ -7,6 +7,7 @@ import { getPostBySlug, incrementPostViews } from '@/lib/firebase/posts';
 import { BlogPost } from '@/types';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import CommentSection from '@/components/CommentSection';
 import { format } from 'date-fns';
 
 export default function BlogPostClient() {
@@ -136,6 +137,9 @@ export default function BlogPostClient() {
               </span>
             ))}
           </div>
+
+          {/* Comments Section */}
+          <CommentSection postId={post.id} />
         </article>
       </main>
       <Footer />
