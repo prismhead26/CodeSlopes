@@ -1,6 +1,6 @@
-# CopeSlopes Setup Guide
+# CodeSlopes Setup Guide
 
-This guide will help you set up and run the CopeSlopes blog application locally and deploy it to Firebase.
+This guide will help you set up and run the CodeSlopes blog application locally and deploy it to Firebase.
 
 ## Prerequisites
 
@@ -180,7 +180,7 @@ Set up these secrets in your GitHub repository settings:
 ## Project Structure
 
 ```
-copeslopes/
+codeslopes/
 ├── .github/
 │   └── workflows/          # GitHub Actions workflows
 ├── e2e/                    # E2E tests (Playwright)

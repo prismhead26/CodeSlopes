@@ -1,4 +1,4 @@
-# CopeSlopes Blog
+# CodeSlopes Blog
 
 A modern, full-featured tech and lifestyle blog with a powerful admin dashboard. Built with Next.js 15, Firebase, and TypeScript.
 
@@ -457,7 +457,7 @@ CodeSlopes/
 
 ## 🎯 About
 
-CopeSlopes is a tech and lifestyle blog documenting the journey of a Software and IT Engineer navigating the intersection of code, AI, and Colorado's outdoor adventures.
+CodeSlopes is a tech and lifestyle blog documenting the journey of a Software and IT Engineer navigating the intersection of code, AI, and Colorado's outdoor adventures.
 
 ---
 

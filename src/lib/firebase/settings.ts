@@ -20,13 +20,13 @@ const convertTimestamp = (data: DocumentData): SiteSettings => {
 
 // Default settings
 const defaultSettings: Omit<SiteSettings, 'id'> = {
-  siteName: 'CopeSlopes',
+  siteName: 'CodeSlopes',
   tagline: 'Tech & Lifestyle Blog',
   description: 'A tech and lifestyle blog documenting the journey of a Software and IT Engineer navigating the intersection of code, AI, and Colorado\'s outdoor adventures.',
   logoUrl: '',
   author: {
-    name: 'CopeSlopes',
-    email: 'contact@copeslopes.com',
+    name: 'CodeSlopes',
+    email: 'contact@codeslopes.com',
     bio: 'Software and IT Engineer passionate about tech, AI, and outdoor adventures.',
     photo: '',
   },

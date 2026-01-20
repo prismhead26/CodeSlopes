@@ -7,9 +7,25 @@ const nextConfig: NextConfig = {
   // Use standard build (not static export) for Firebase Hosting with SSR
   // This provides better SEO and supports dynamic routes properly
 
-  // Images configuration
+  // Images configuration - use remotePatterns for Next.js 13+
   images: {
-    domains: ['firebasestorage.googleapis.com', 'lh3.googleusercontent.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.googleusercontent.com',
+        pathname: '/**',
+      },
+    ],
   },
 
   // Add trailing slashes for consistency

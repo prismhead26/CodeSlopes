@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Home Page', () => {
   test('should display the main heading', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByRole('heading', { name: /Welcome to CopeSlopes/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Welcome to CodeSlopes/i })).toBeVisible();
   });
 
   test('should have navigation links', async ({ page }) => {

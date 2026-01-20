@@ -1,6 +1,6 @@
-# Contributing to CopeSlopes
+# Contributing to CodeSlopes
 
-Thank you for considering contributing to CopeSlopes! This document provides guidelines for contributing to the project.
+Thank you for considering contributing to CodeSlopes! This document provides guidelines for contributing to the project.
 
 ## Development Workflow
 

@@ -7,11 +7,11 @@ export default function AboutPage() {
       <Header />
       <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="container mx-auto px-4 py-12 max-w-4xl">
-          <h1 className="text-4xl md:text-5xl font-bold mb-8">About CopeSlopes</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-8">About CodeSlopes</h1>
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-xl mb-6">
-              Welcome to CopeSlopes - where technology meets lifestyle in the beautiful Colorado landscape.
+              Welcome to CodeSlopes - where technology meets lifestyle in the beautiful Colorado landscape.
             </p>
 
             <h2>Who I Am</h2>
@@ -43,7 +43,7 @@ export default function AboutPage() {
 
             <h2>The Mission</h2>
             <p>
-              CopeSlopes is more than just a blog - it&apos;s a platform for learning, sharing, and
+              CodeSlopes is more than just a blog - it&apos;s a platform for learning, sharing, and
               growing together. Whether you&apos;re a fellow developer, AI enthusiast, or someone
               curious about tech, you&apos;ll find valuable content here.
             </p>

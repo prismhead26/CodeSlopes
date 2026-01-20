@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           <div>
             <h3 className="text-lg font-bold mb-4 bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-              CopeSlopes
+              CodeSlopes
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Documenting the journey of a Software Engineer navigating tech, AI, and Colorado adventures.
@@ -79,7 +79,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-200 dark:border-gray-700 mt-8 pt-8 text-center text-sm text-gray-600 dark:text-gray-400">
-          <p>&copy; {new Date().getFullYear()} CopeSlopes. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} CodeSlopes. All rights reserved.</p>
         </div>
       </div>
     </footer>

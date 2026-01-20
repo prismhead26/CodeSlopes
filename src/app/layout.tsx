@@ -6,12 +6,12 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import AuthGuard from "@/components/AuthGuard";
 
 export const metadata: Metadata = {
-  title: "CopeSlopes - Tech & Lifestyle Blog",
+  title: "CodeSlopes - Tech & Lifestyle Blog",
   description: "A tech and lifestyle blog documenting the journey of a Software and IT Engineer navigating the intersection of code, AI, and Colorado's outdoor adventures.",
   keywords: ["blog", "tech", "AI", "software engineering", "Colorado", "lifestyle"],
-  authors: [{ name: "CopeSlopes" }],
+  authors: [{ name: "CodeSlopes" }],
   openGraph: {
-    title: "CopeSlopes - Tech & Lifestyle Blog",
+    title: "CodeSlopes - Tech & Lifestyle Blog",
     description: "Documenting the journey of a Software and IT Engineer",
     type: "website",
   },

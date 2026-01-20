@@ -24,7 +24,7 @@ test.describe('Navigation', () => {
     await page.goto('/');
 
     // Check logo link
-    const logo = page.getByText('CopeSlopes').first();
+    const logo = page.getByText('CodeSlopes').first();
     await expect(logo).toBeVisible();
 
     // Check navigation links
