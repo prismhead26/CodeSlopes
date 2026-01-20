@@ -1,8 +1,11 @@
 import Link from "next/link";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
+      <Header />
       <main className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
@@ -54,11 +57,7 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="border-t border-gray-200 dark:border-gray-700 mt-20">
-        <div className="container mx-auto px-4 py-8 text-center text-gray-600 dark:text-gray-400">
-          <p>&copy; {new Date().getFullYear()} CopeSlopes. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
