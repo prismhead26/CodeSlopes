@@ -97,6 +97,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
                 src={user.photoURL}
                 alt={user.displayName || 'User'}
                 className="w-10 h-10 rounded-full"
+                referrerPolicy="no-referrer"
               />
             ) : (
               <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold">
@@ -154,6 +155,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
                   src={comment.userPhoto}
                   alt={comment.userName}
                   className="w-10 h-10 rounded-full"
+                  referrerPolicy="no-referrer"
                 />
               ) : (
                 <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold">

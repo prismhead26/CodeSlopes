@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
 import { signOut } from '@/lib/firebase/auth';
 import { useRouter } from 'next/navigation';
@@ -55,15 +54,14 @@ export default function Header() {
             {user ? (
               <div className="flex items-center gap-4">
                 {user.photoURL ? (
-                  <Image
+                  <img
                     src={user.photoURL}
                     alt={user.displayName || 'User'}
-                    width={32}
-                    height={32}
-                    className="rounded-full"
+                    className="w-8 h-8 rounded-full"
+                    referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
                     <span className="text-white text-sm font-semibold">
                       {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
                     </span>
