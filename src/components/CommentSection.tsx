@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { format } from 'date-fns';
+import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
 import { useAuth } from '@/hooks/useAuth';
 import { Comment } from '@/types';
-import { getCommentsByPost, createComment } from '@/lib/firebase/comments';
+import { createComment } from '@/lib/firebase/comments';
 import toast from 'react-hot-toast';
 
 interface CommentSectionProps {
@@ -19,20 +21,33 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   const [content, setContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // Real-time listener for approved comments
   useEffect(() => {
-    loadComments();
-  }, [postId]);
+    const commentsRef = collection(db, 'comments');
+    const q = query(
+      commentsRef,
+      where('postId', '==', postId),
+      where('approved', '==', true),
+      orderBy('createdAt', 'desc')
+    );
 
-  const loadComments = async () => {
-    setLoading(true);
-    const { comments: fetchedComments, error } = await getCommentsByPost(postId);
-    if (error) {
-      console.error('Error loading comments:', error);
-    } else {
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedComments = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate() || new Date(),
+        updatedAt: doc.data().updatedAt?.toDate() || new Date(),
+      })) as Comment[];
+
       setComments(fetchedComments);
-    }
-    setLoading(false);
-  };
+      setLoading(false);
+    }, (error) => {
+      console.error('Error loading comments:', error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [postId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
