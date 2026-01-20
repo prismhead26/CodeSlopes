@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { BlogPost } from '@/types';
 import { format } from 'date-fns';
 
@@ -45,14 +44,17 @@ export default function BlogCard({ post }: BlogCardProps) {
 
         <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
           <div className="flex items-center gap-2">
-            {post.authorPhoto && (
-              <Image
+            {post.authorPhoto ? (
+              <img
                 src={post.authorPhoto}
                 alt={post.authorName}
-                width={24}
-                height={24}
-                className="rounded-full"
+                className="w-6 h-6 rounded-full"
+                referrerPolicy="no-referrer"
               />
+            ) : (
+              <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-400 text-xs font-bold">
+                {post.authorName.charAt(0).toUpperCase()}
+              </div>
             )}
             <span>{post.authorName}</span>
           </div>
