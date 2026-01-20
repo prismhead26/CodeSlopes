@@ -87,6 +87,28 @@ export interface Analytics {
   metadata?: Record<string, unknown>;
 }
 
+export interface Tutorial {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  coverImage?: string | null;
+  category: 'networking' | 'linux' | 'windows' | 'security' | 'devops' | 'general';
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  tags: string[];
+  published: boolean;
+  publishedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  authorId: string;
+  authorName: string;
+  authorPhoto?: string | null;
+  readingTime: number;
+  views: number;
+  likes: number;
+}
+
 export interface SiteSettings {
   id: string;
   siteName: string;

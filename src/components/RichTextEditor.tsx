@@ -19,7 +19,9 @@ interface RichTextEditorProps {
 export default function RichTextEditor({ content, onChange, placeholder }: RichTextEditorProps) {
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        codeBlock: false, // Disable default codeBlock since we use CodeBlockLowlight
+      }),
       Placeholder.configure({
         placeholder: placeholder || 'Start writing your blog post...',
       }),

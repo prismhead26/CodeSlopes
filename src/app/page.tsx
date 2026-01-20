@@ -32,27 +32,36 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mt-16">
-            <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+            <Link
+              href="/tutorials"
+              className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+            >
               <div className="text-4xl mb-4">💻</div>
               <h3 className="text-xl font-bold mb-2">Tech Tutorials</h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Deep dives into software engineering, AI, and cutting-edge technology
+                Hands-on networking, Linux, and IT administration guides with terminal commands
               </p>
-            </div>
-            <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+            </Link>
+            <Link
+              href="/blog?category=ai"
+              className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+            >
               <div className="text-4xl mb-4">🤖</div>
               <h3 className="text-xl font-bold mb-2">AI Integration</h3>
               <p className="text-gray-600 dark:text-gray-400">
                 Exploring the future with AI-powered content and insights
               </p>
-            </div>
-            <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+            </Link>
+            <Link
+              href="/blog?category=lifestyle"
+              className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+            >
               <div className="text-4xl mb-4">🏔️</div>
               <h3 className="text-xl font-bold mb-2">Lifestyle</h3>
               <p className="text-gray-600 dark:text-gray-400">
                 Adventures, experiences, and life in beautiful Colorado
               </p>
-            </div>
+            </Link>
           </div>
         </div>
       </main>

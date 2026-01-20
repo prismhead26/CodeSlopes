@@ -59,3 +59,30 @@ body {
 .ProseMirror:focus {
   @apply outline-none;
 }
+
+/* Code block styling */
+.ProseMirror pre {
+  @apply bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4;
+}
+
+.ProseMirror pre code {
+  @apply bg-transparent text-inherit p-0;
+}
+
+.ProseMirror code {
+  @apply bg-gray-200 dark:bg-gray-700 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded text-sm;
+}
+
+/* Prose code styling for rendered content */
+.prose pre {
+  @apply bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto;
+}
+
+.prose code::before,
+.prose code::after {
+  content: none;
+}
+
+.prose :not(pre) > code {
+  @apply bg-gray-200 dark:bg-gray-700 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded text-sm font-normal;
+}

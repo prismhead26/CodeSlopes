@@ -23,13 +23,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-gray-600 dark:text-gray-400 hover:text-blue-600">
-                  About
+                <Link href="/tutorials" className="text-gray-600 dark:text-gray-400 hover:text-blue-600">
+                  Tech Tutorials
                 </Link>
               </li>
               <li>
-                <Link href="/categories" className="text-gray-600 dark:text-gray-400 hover:text-blue-600">
-                  Categories
+                <Link href="/about" className="text-gray-600 dark:text-gray-400 hover:text-blue-600">
+                  About
                 </Link>
               </li>
             </ul>

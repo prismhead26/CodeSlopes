@@ -109,6 +109,17 @@ export default function AdminPage() {
                 Configure site settings and preferences
               </p>
             </Link>
+
+            <Link
+              href="/admin/tutorials/new"
+              className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow border-2 border-dashed border-blue-300 dark:border-blue-700"
+            >
+              <div className="text-4xl mb-4">💻</div>
+              <h2 className="text-xl font-bold mb-2">Create Tech Tutorial</h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                Write a new networking or IT tutorial
+              </p>
+            </Link>
           </div>
         </div>
       </main>
