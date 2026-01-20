@@ -60,18 +60,33 @@ export default function Footer() {
             <h4 className="font-semibold mb-4">Connect</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="#" className="text-gray-600 dark:text-gray-400 hover:text-blue-600">
+                <a
+                  href="https://github.com/prismhead26/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600"
+                >
                   GitHub
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-600 dark:text-gray-400 hover:text-blue-600">
+                <a
+                  href="https://www.linkedin.com/in/aiden-wahed-a78539227"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600"
+                >
                   LinkedIn
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-600 dark:text-gray-400 hover:text-blue-600">
-                  Twitter
+                <a
+                  href="https://x.com/Count_Spockula"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600"
+                >
+                  Twitter / X
                 </a>
               </li>
             </ul>

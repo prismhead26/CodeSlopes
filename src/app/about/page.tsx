@@ -53,6 +53,33 @@ export default function AboutPage() {
               I love connecting with readers and fellow technologists. Feel free to reach out
               through social media or leave comments on posts. Let&apos;s learn and grow together!
             </p>
+
+            <div className="flex gap-4 mt-4 not-prose">
+              <a
+                href="https://github.com/prismhead26/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors"
+              >
+                GitHub
+              </a>
+              <a
+                href="https://www.linkedin.com/in/aiden-wahed-a78539227"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-colors"
+              >
+                LinkedIn
+              </a>
+              <a
+                href="https://x.com/Count_Spockula"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 bg-black dark:bg-gray-700 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors"
+              >
+                Twitter / X
+              </a>
+            </div>
           </div>
         </div>
       </main>
