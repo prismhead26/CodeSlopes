@@ -1,14 +1,7 @@
 import EditPostClient from './EditPostClient';
 
-// Required for static export
-export const dynamic = 'force-static';
-export const dynamicParams = false;
-
-// Dynamic routes need generateStaticParams for static export
-export async function generateStaticParams(): Promise<{ id: string }[]> {
-  // Return empty array - admin pages require authentication and will be loaded client-side
-  return [];
-}
+// Allow dynamic routes - posts are fetched client-side from Firestore
+export const dynamic = 'force-dynamic';
 
 export default function EditPostPage() {
   return <EditPostClient />;
