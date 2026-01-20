@@ -121,14 +121,16 @@ export default function TutorialClient() {
 
           <div className="flex items-center justify-between mb-8 pb-8 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-3">
-              {tutorial.authorPhoto && (
-                <Image
+              {tutorial.authorPhoto ? (
+                <img
                   src={tutorial.authorPhoto}
                   alt={tutorial.authorName}
-                  width={48}
-                  height={48}
-                  className="rounded-full"
+                  className="w-12 h-12 rounded-full"
                 />
+              ) : (
+                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-lg">
+                  {tutorial.authorName.charAt(0).toUpperCase()}
+                </div>
               )}
               <div>
                 <p className="font-semibold">{tutorial.authorName}</p>

@@ -104,14 +104,16 @@ export default function BlogPostClient() {
 
           <div className="flex items-center justify-between mb-8 pb-8 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-3">
-              {post.authorPhoto && (
-                <Image
+              {post.authorPhoto ? (
+                <img
                   src={post.authorPhoto}
                   alt={post.authorName}
-                  width={48}
-                  height={48}
-                  className="rounded-full"
+                  className="w-12 h-12 rounded-full"
                 />
+              ) : (
+                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-lg">
+                  {post.authorName.charAt(0).toUpperCase()}
+                </div>
               )}
               <div>
                 <p className="font-semibold">{post.authorName}</p>

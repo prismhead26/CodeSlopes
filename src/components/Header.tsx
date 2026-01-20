@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
 import { signOut } from '@/lib/firebase/auth';
 import { useRouter } from 'next/navigation';
@@ -33,6 +34,9 @@ export default function Header() {
             <Link href="/blog" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
               Blog
             </Link>
+            <Link href="/tutorials" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              Tutorials
+            </Link>
             <Link href="/about" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
               About
             </Link>
@@ -50,7 +54,22 @@ export default function Header() {
 
             {user ? (
               <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-600 dark:text-gray-400">
+                {user.photoURL ? (
+                  <Image
+                    src={user.photoURL}
+                    alt={user.displayName || 'User'}
+                    width={32}
+                    height={32}
+                    className="rounded-full"
+                  />
+                ) : (
+                  <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
+                    <span className="text-white text-sm font-semibold">
+                      {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                <span className="text-sm text-gray-600 dark:text-gray-400 hidden md:inline">
                   {user.displayName || user.email}
                 </span>
                 <button

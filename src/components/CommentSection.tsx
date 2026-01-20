@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { format } from 'date-fns';
 import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
@@ -93,14 +92,16 @@ export default function CommentSection({ postId }: CommentSectionProps) {
       {user ? (
         <form onSubmit={handleSubmit} className="mb-8">
           <div className="flex gap-3">
-            {user.photoURL && (
-              <Image
+            {user.photoURL ? (
+              <img
                 src={user.photoURL}
                 alt={user.displayName || 'User'}
-                width={40}
-                height={40}
-                className="rounded-full h-10 w-10"
+                className="w-10 h-10 rounded-full"
               />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold">
+                {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
+              </div>
             )}
             <div className="flex-1">
               <textarea
@@ -149,18 +150,14 @@ export default function CommentSection({ postId }: CommentSectionProps) {
           {comments.map((comment) => (
             <div key={comment.id} className="flex gap-3">
               {comment.userPhoto ? (
-                <Image
+                <img
                   src={comment.userPhoto}
                   alt={comment.userName}
-                  width={40}
-                  height={40}
-                  className="rounded-full h-10 w-10"
+                  className="w-10 h-10 rounded-full"
                 />
               ) : (
-                <div className="h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
-                  <span className="text-gray-600 dark:text-gray-300 font-semibold">
-                    {comment.userName.charAt(0).toUpperCase()}
-                  </span>
+                <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold">
+                  {comment.userName.charAt(0).toUpperCase()}
                 </div>
               )}
               <div className="flex-1">
