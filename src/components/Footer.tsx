@@ -1,6 +1,21 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { getCategories } from '@/lib/firebase/categories';
+import { Category } from '@/types';
 
 export default function Footer() {
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const { categories: fetchedCategories } = await getCategories();
+      setCategories(fetchedCategories);
+    };
+    fetchCategories();
+  }, []);
+
   return (
     <footer className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 mt-20">
       <div className="container mx-auto px-4 py-12">
@@ -38,21 +53,37 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Categories</h4>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/blog?category=tech" className="text-gray-600 dark:text-gray-400 hover:text-blue-600">
-                  Tech
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog?category=ai" className="text-gray-600 dark:text-gray-400 hover:text-blue-600">
-                  AI
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog?category=lifestyle" className="text-gray-600 dark:text-gray-400 hover:text-blue-600">
-                  Lifestyle
-                </Link>
-              </li>
+              {categories.length > 0 ? (
+                categories.map((category) => (
+                  <li key={category.id}>
+                    <Link
+                      href={`/blog?category=${category.slug}`}
+                      className="text-gray-600 dark:text-gray-400 hover:text-blue-600"
+                    >
+                      {category.icon && <span className="mr-1">{category.icon}</span>}
+                      {category.name}
+                    </Link>
+                  </li>
+                ))
+              ) : (
+                <>
+                  <li>
+                    <Link href="/blog?category=tech" className="text-gray-600 dark:text-gray-400 hover:text-blue-600">
+                      Tech
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/blog?category=ai" className="text-gray-600 dark:text-gray-400 hover:text-blue-600">
+                      AI
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/blog?category=lifestyle" className="text-gray-600 dark:text-gray-400 hover:text-blue-600">
+                      Lifestyle
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
 

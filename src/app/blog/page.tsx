@@ -3,24 +3,19 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getPosts } from '@/lib/firebase/posts';
-import { BlogPost } from '@/types';
+import { getCategories } from '@/lib/firebase/categories';
+import { BlogPost, Category } from '@/types';
 import BlogCard from '@/components/BlogCard';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-
-// Permanent categories
-const CATEGORIES = [
-  { slug: 'tech', name: 'Tech', icon: '💻', description: 'Software engineering and technology' },
-  { slug: 'ai', name: 'AI', icon: '🤖', description: 'Artificial intelligence and machine learning' },
-  { slug: 'lifestyle', name: 'Lifestyle', icon: '🏔️', description: 'Life adventures and experiences' },
-];
 
 export default function BlogPage() {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get('category');
 
   const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,21 +23,30 @@ export default function BlogPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>(categoryParam || '');
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchData = async () => {
       setLoading(true);
-      const { posts, error } = await getPosts({ published: true, limitCount: 50 });
 
-      if (error) {
-        setError(error.message);
+      // Fetch posts and categories in parallel
+      const [postsResult, categoriesResult] = await Promise.all([
+        getPosts({ published: true, limitCount: 50 }),
+        getCategories()
+      ]);
+
+      if (postsResult.error) {
+        setError(postsResult.error.message);
       } else {
-        setPosts(posts);
-        setFilteredPosts(posts);
+        setPosts(postsResult.posts);
+        setFilteredPosts(postsResult.posts);
+      }
+
+      if (!categoriesResult.error) {
+        setCategories(categoriesResult.categories);
       }
 
       setLoading(false);
     };
 
-    fetchPosts();
+    fetchData();
   }, []);
 
   // Update selected category when URL param changes
@@ -114,7 +118,7 @@ export default function BlogPage() {
 
           {/* Category Filters */}
           <div className="flex flex-wrap justify-center gap-4 mb-8">
-            {CATEGORIES.map((category) => (
+            {categories.map((category) => (
               <button
                 key={category.slug}
                 onClick={() => handleCategoryClick(category.slug)}
@@ -124,7 +128,7 @@ export default function BlogPage() {
                     : 'bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 shadow'
                 }`}
               >
-                <span className="mr-2">{category.icon}</span>
+                {category.icon && <span className="mr-2">{category.icon}</span>}
                 {category.name}
               </button>
             ))}
@@ -142,7 +146,7 @@ export default function BlogPage() {
           {!loading && (
             <p className="text-center text-gray-600 dark:text-gray-400 mb-8">
               {filteredPosts.length} {filteredPosts.length === 1 ? 'post' : 'posts'} found
-              {selectedCategory && ` in ${CATEGORIES.find(c => c.slug === selectedCategory)?.name || selectedCategory}`}
+              {selectedCategory && ` in ${categories.find(c => c.slug === selectedCategory)?.name || selectedCategory}`}
               {searchQuery && ` matching "${searchQuery}"`}
             </p>
           )}
