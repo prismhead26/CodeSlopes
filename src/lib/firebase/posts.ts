@@ -19,6 +19,7 @@ import {
 import { db } from './config';
 import { BlogPost } from '@/types';
 import { getCategoryBySlug } from './categories';
+import { sanitizeHtml, sanitizeText, sanitizeSlug } from '@/lib/security/sanitize';
 
 const postsCollection = collection(db, 'posts');
 
@@ -50,8 +51,19 @@ const convertTimestamp = (data: DocumentData): BlogPost => {
 export const createPost = async (postData: Omit<BlogPost, 'id' | 'createdAt' | 'updatedAt' | 'views' | 'likes'>) => {
   try {
     const now = Timestamp.now();
-    const docRef = await addDoc(postsCollection, {
+
+    // Sanitize user input to prevent XSS
+    const sanitizedData = {
       ...postData,
+      title: sanitizeText(postData.title),
+      slug: sanitizeSlug(postData.slug),
+      content: sanitizeHtml(postData.content),
+      excerpt: sanitizeText(postData.excerpt),
+      tags: postData.tags.map(tag => sanitizeText(tag)),
+    };
+
+    const docRef = await addDoc(postsCollection, {
+      ...sanitizedData,
       createdAt: now,
       updatedAt: now,
       publishedAt: postData.published ? now : null,

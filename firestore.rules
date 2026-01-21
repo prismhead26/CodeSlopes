@@ -2,7 +2,9 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper functions
+    // =============================================
+    // Helper Functions
+    // =============================================
     function isSignedIn() {
       return request.auth != null;
     }
@@ -16,75 +18,186 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // Blog posts - public read for published, admin full access
+    // Validate string length
+    function isValidString(str, minLen, maxLen) {
+      return str is string && str.size() >= minLen && str.size() <= maxLen;
+    }
+
+    // =============================================
+    // Blog Posts
+    // =============================================
     match /posts/{postId} {
-      // Allow anyone to read published posts, admins can read all
+      // Read: Anyone can read published posts, admins can read all
       allow get: if resource.data.published == true || isAdmin();
-      allow list: if isAdmin() || true; // Allow list queries, individual docs filtered by get rule
-      allow create, delete: if isAdmin();
-      // Allow admins full update, allow signed-in users to increment views/likes on published posts
+      allow list: if isAdmin() ||
+        (request.query.limit <= 50 &&
+         ('published' in request.query) == false || request.query.published == true);
+
+      // Write: Only admins
+      allow create: if isAdmin() && validatePost();
+      allow delete: if isAdmin();
+
+      // Update: Admins full access, signed-in users can only increment views/likes
       allow update: if isAdmin() ||
-        (isSignedIn() && resource.data.published == true &&
-         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views', 'likes']));
+        (isSignedIn() &&
+         resource.data.published == true &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views', 'likes']) &&
+         // Ensure views/likes can only increase by 1
+         (request.resource.data.views == resource.data.views + 1 ||
+          request.resource.data.likes == resource.data.likes + 1));
+
+      function validatePost() {
+        let data = request.resource.data;
+        return isValidString(data.title, 1, 200) &&
+               isValidString(data.slug, 1, 200) &&
+               isValidString(data.content, 1, 100000) &&
+               isValidString(data.excerpt, 1, 500) &&
+               data.tags is list && data.tags.size() <= 10;
+      }
     }
 
-    // Tutorials - public read for published, admin full access
+    // =============================================
+    // Tutorials
+    // =============================================
     match /tutorials/{tutorialId} {
-      // Allow anyone to read published tutorials, admins can read all
+      // Read: Anyone can read published tutorials, admins can read all
       allow get: if resource.data.published == true || isAdmin();
-      allow list: if isAdmin() || true; // Allow list queries, individual docs filtered by get rule
-      allow create, delete: if isAdmin();
-      // Allow admins full update, allow signed-in users to increment views/likes on published tutorials
+      allow list: if isAdmin() ||
+        (request.query.limit <= 50 &&
+         ('published' in request.query) == false || request.query.published == true);
+
+      // Write: Only admins
+      allow create: if isAdmin() && validateTutorial();
+      allow delete: if isAdmin();
+
+      // Update: Admins full access, signed-in users can only increment views/likes
       allow update: if isAdmin() ||
-        (isSignedIn() && resource.data.published == true &&
-         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views', 'likes']));
+        (isSignedIn() &&
+         resource.data.published == true &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views', 'likes']) &&
+         (request.resource.data.views == resource.data.views + 1 ||
+          request.resource.data.likes == resource.data.likes + 1));
+
+      function validateTutorial() {
+        let data = request.resource.data;
+        return isValidString(data.title, 1, 200) &&
+               isValidString(data.slug, 1, 200) &&
+               isValidString(data.content, 1, 100000) &&
+               data.difficulty in ['beginner', 'intermediate', 'advanced'];
+      }
     }
 
-    // Categories - public read, admin write
+    // =============================================
+    // Categories
+    // =============================================
     match /categories/{categoryId} {
       allow read: if true;
-      allow create, update, delete: if isAdmin();
+      allow create: if isAdmin() && validateCategory();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+
+      function validateCategory() {
+        let data = request.resource.data;
+        return isValidString(data.name, 1, 50) &&
+               isValidString(data.slug, 1, 50) &&
+               data.slug.matches('^[a-z0-9-]+$');
+      }
     }
 
-    // Tags - public read, admin write
+    // =============================================
+    // Tags
+    // =============================================
     match /tags/{tagId} {
       allow read: if true;
       allow create, update, delete: if isAdmin();
     }
 
-    // Comments - approved read, signed-in write, admin moderate
+    // =============================================
+    // Comments
+    // =============================================
     match /comments/{commentId} {
-      // Admins can read all, public can only read approved
-      allow read: if isAdmin() || (resource != null && resource.data.approved == true);
-      allow create: if isSignedIn();
-      allow update: if isOwner(resource.data.userId) || isAdmin();
+      // Read: Admins see all, public only sees approved
+      allow get: if isAdmin() || resource.data.approved == true;
+      allow list: if isAdmin() ||
+        (request.query.limit <= 100 &&
+         ('approved' in request.query) == false || request.query.approved == true);
+
+      // Create: Signed-in users with validation
+      allow create: if isSignedIn() && validateComment();
+
+      // Update: Owner can edit content (before approval), admin can moderate
+      allow update: if isAdmin() ||
+        (isOwner(resource.data.userId) &&
+         resource.data.approved == false &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['content']));
+
+      // Delete: Owner or admin
       allow delete: if isOwner(resource.data.userId) || isAdmin();
+
+      function validateComment() {
+        let data = request.resource.data;
+        return isValidString(data.content, 1, 1000) &&
+               data.userId == request.auth.uid &&
+               isValidString(data.postId, 1, 100) &&
+               data.approved == false; // New comments must start as unapproved
+      }
     }
 
-    // Admin users
+    // =============================================
+    // Admin Users (Read-only from client)
+    // =============================================
     match /admins/{userId} {
+      // Only signed-in users can check admin status
       allow read: if isSignedIn();
-      allow write: if false; // Only set via Firebase console/admin SDK
+      // Admin list can only be modified via Firebase Console or Admin SDK
+      allow write: if false;
     }
 
-    // User profiles
+    // =============================================
+    // User Profiles
+    // =============================================
     match /users/{userId} {
       allow read: if true;
-      allow create, update: if isOwner(userId);
+      allow create: if isOwner(userId) && validateUserProfile();
+      allow update: if isOwner(userId) && validateUserProfile();
       allow delete: if isAdmin();
+
+      function validateUserProfile() {
+        let data = request.resource.data;
+        return isValidString(data.displayName, 1, 100) &&
+               (!('bio' in data) || isValidString(data.bio, 0, 500));
+      }
     }
 
-    // Analytics - admin read, public can log events
+    // =============================================
+    // Analytics (Rate limited via application)
+    // =============================================
     match /analytics/{docId} {
       allow read: if isAdmin();
-      allow create: if true; // Allow logging from client
+      // Only allow creating analytics from signed-in users to prevent spam
+      allow create: if isSignedIn() && validateAnalytics();
       allow update, delete: if isAdmin();
+
+      function validateAnalytics() {
+        let data = request.resource.data;
+        return data.event in ['view', 'like', 'comment', 'share'] &&
+               data.timestamp == request.time;
+      }
     }
 
-    // Site settings - public read, admin write
+    // =============================================
+    // Site Settings
+    // =============================================
     match /settings/{docId} {
       allow read: if true;
       allow write: if isAdmin();
+    }
+
+    // =============================================
+    // Security: Deny all other paths
+    // =============================================
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
