@@ -114,3 +114,44 @@ export const updateCategoryPostCount = async (categoryId: string, count: number)
     return { error: error as Error };
   }
 };
+
+/**
+ * Recalculate post counts for all categories by counting actual posts
+ */
+export const recalculateCategoryPostCounts = async () => {
+  try {
+    // Get all categories
+    const { categories, error: catError } = await getCategories();
+    if (catError) return { error: catError };
+
+    // Get all posts
+    const postsSnapshot = await getDocs(collection(db, 'posts'));
+
+    // Count posts per category (by slug)
+    const countBySlug = new Map<string, number>();
+    postsSnapshot.docs.forEach(doc => {
+      const category = doc.data().category;
+      if (category) {
+        countBySlug.set(category, (countBySlug.get(category) || 0) + 1);
+      }
+    });
+
+    // Update each category's postCount
+    const updates: Promise<{ error: Error | null }>[] = [];
+    for (const category of categories) {
+      const count = countBySlug.get(category.slug) || 0;
+      if (category.postCount !== count) {
+        updates.push(updateCategoryPostCount(category.id, count));
+      }
+    }
+
+    await Promise.all(updates);
+
+    return {
+      updated: updates.length,
+      error: null
+    };
+  } catch (error) {
+    return { updated: 0, error: error as Error };
+  }
+};

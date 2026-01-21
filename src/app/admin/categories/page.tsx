@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
-import { createCategory, updateCategory, deleteCategory } from '@/lib/firebase/categories';
+import { createCategory, updateCategory, deleteCategory, recalculateCategoryPostCounts } from '@/lib/firebase/categories';
 import { getPosts } from '@/lib/firebase/posts';
 import { db } from '@/lib/firebase/config';
 import { collection, onSnapshot, query, orderBy, Timestamp } from 'firebase/firestore';
@@ -16,7 +16,7 @@ import LoadingSpinner from '@/components/admin/LoadingSpinner';
 import EmptyState from '@/components/admin/EmptyState';
 import CategoryForm from '@/components/categories/CategoryForm';
 import toast from 'react-hot-toast';
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, TrashIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 export default function ManageCategoriesPage() {
   const { user, isAdmin, loading: authLoading } = useAuth();
@@ -30,6 +30,7 @@ export default function ManageCategoriesPage() {
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [recalculating, setRecalculating] = useState(false);
 
   useEffect(() => {
     if (!authLoading && (!user || !isAdmin)) {
@@ -147,6 +148,18 @@ export default function ManageCategoriesPage() {
     }
   };
 
+  const handleRecalculateCounts = async () => {
+    setRecalculating(true);
+    const { updated, error } = await recalculateCategoryPostCounts();
+    setRecalculating(false);
+
+    if (error) {
+      toast.error(`Error recalculating counts: ${error.message}`);
+    } else {
+      toast.success(`Post counts updated for ${updated} ${updated === 1 ? 'category' : 'categories'}`);
+    }
+  };
+
   if (authLoading || loading) {
     return (
       <>
@@ -170,12 +183,22 @@ export default function ManageCategoriesPage() {
         <div className="container mx-auto px-4 py-12">
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">Manage Categories</h1>
-            <button
-              onClick={handleCreateClick}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Create Category
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleRecalculateCounts}
+                disabled={recalculating}
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                <ArrowPathIcon className={`h-5 w-5 ${recalculating ? 'animate-spin' : ''}`} />
+                {recalculating ? 'Recalculating...' : 'Recalculate Counts'}
+              </button>
+              <button
+                onClick={handleCreateClick}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Create Category
+              </button>
+            </div>
           </div>
 
           {/* Stats */}
