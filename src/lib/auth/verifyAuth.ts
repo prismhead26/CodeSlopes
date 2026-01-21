@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { adminAuth, adminDb } from '@/lib/firebase/admin';
+import { getAdminAuth, getAdminDb } from '@/lib/firebase/admin';
 
 export interface AuthResult {
   authenticated: boolean;
@@ -27,11 +27,11 @@ export async function verifyAuth(request: NextRequest): Promise<AuthResult> {
     }
 
     // Verify the ID token
-    const decodedToken = await adminAuth.verifyIdToken(idToken);
+    const decodedToken = await getAdminAuth().verifyIdToken(idToken);
     const userId = decodedToken.uid;
 
     // Check if user is admin
-    const adminDoc = await adminDb.collection('admins').doc(userId).get();
+    const adminDoc = await getAdminDb().collection('admins').doc(userId).get();
     const isAdmin = adminDoc.exists;
 
     return {

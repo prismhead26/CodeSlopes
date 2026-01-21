@@ -1,9 +1,4 @@
-import DOMPurify from 'dompurify';
-import { JSDOM } from 'jsdom';
-
-// Create a window object for server-side use
-const window = new JSDOM('').window;
-const purify = DOMPurify(window);
+import DOMPurify from 'isomorphic-dompurify';
 
 /**
  * Allowed HTML tags for blog content
@@ -35,7 +30,7 @@ const ALLOWED_ATTR = [
  * Used for blog post content, tutorials, and comments
  */
 export function sanitizeHtml(dirty: string): string {
-  return purify.sanitize(dirty, {
+  return DOMPurify.sanitize(dirty, {
     ALLOWED_TAGS,
     ALLOWED_ATTR,
     ALLOW_DATA_ATTR: false,
@@ -49,7 +44,7 @@ export function sanitizeHtml(dirty: string): string {
  * Used for titles, excerpts, names, etc.
  */
 export function sanitizeText(dirty: string): string {
-  return purify.sanitize(dirty, {
+  return DOMPurify.sanitize(dirty, {
     ALLOWED_TAGS: [],
     ALLOWED_ATTR: [],
   });
@@ -59,7 +54,7 @@ export function sanitizeText(dirty: string): string {
  * Sanitize comment content - very limited HTML allowed
  */
 export function sanitizeComment(dirty: string): string {
-  return purify.sanitize(dirty, {
+  return DOMPurify.sanitize(dirty, {
     ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'code', 'a'],
     ALLOWED_ATTR: ['href', 'target', 'rel'],
   });
