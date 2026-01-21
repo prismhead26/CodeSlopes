@@ -46,6 +46,11 @@ body {
 /* Tiptap Editor Styles */
 .ProseMirror {
   @apply min-h-[200px] outline-none prose prose-sm sm:prose lg:prose-lg max-w-none;
+  color: inherit;
+}
+
+.dark .ProseMirror {
+  @apply prose-invert;
 }
 
 .ProseMirror p.is-editor-empty:first-child::before {
@@ -58,6 +63,55 @@ body {
 
 .ProseMirror:focus {
   @apply outline-none;
+}
+
+/* Bold text */
+.ProseMirror strong {
+  @apply text-gray-900 dark:text-white font-bold;
+}
+
+/* Headings */
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3,
+.ProseMirror h4,
+.ProseMirror h5,
+.ProseMirror h6 {
+  @apply text-gray-900 dark:text-white;
+  text-decoration: none !important;
+}
+
+.ProseMirror h2 {
+  @apply text-2xl font-bold mt-6 mb-4;
+}
+
+.ProseMirror h3 {
+  @apply text-xl font-bold mt-4 mb-3;
+}
+
+/* Blockquote */
+.ProseMirror blockquote {
+  @apply border-l-4 border-gray-300 dark:border-gray-600 pl-4 py-2 my-4 italic;
+  @apply text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800;
+}
+
+.ProseMirror blockquote p {
+  @apply m-0;
+}
+
+/* Lists */
+.ProseMirror ul,
+.ProseMirror ol {
+  @apply text-gray-700 dark:text-gray-300 my-4 pl-6;
+}
+
+.ProseMirror li {
+  @apply my-1;
+}
+
+/* Paragraphs */
+.ProseMirror p {
+  @apply text-gray-700 dark:text-gray-300 my-2;
 }
 
 /* Code block styling */
