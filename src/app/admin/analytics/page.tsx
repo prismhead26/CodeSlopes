@@ -5,14 +5,15 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { db } from '@/lib/firebase/config';
-import { collection, onSnapshot, query, orderBy, where, Timestamp } from 'firebase/firestore';
-import { BlogPost } from '@/types';
+import { collection, onSnapshot, query, orderBy, where, Timestamp, limit } from 'firebase/firestore';
+import { BlogPost, Analytics, UserActivity } from '@/types';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import StatCard from '@/components/analytics/StatCard';
 import LoadingSpinner from '@/components/admin/LoadingSpinner';
 import toast from 'react-hot-toast';
-import { EyeIcon, HeartIcon, ChatBubbleLeftIcon, ClockIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, HeartIcon, ChatBubbleLeftIcon, ClockIcon, ArrowDownTrayIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { format } from 'date-fns';
 
 export default function AnalyticsPage() {
   const { user, isAdmin, loading: authLoading } = useAuth();
@@ -20,6 +21,8 @@ export default function AnalyticsPage() {
 
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [recentActivity, setRecentActivity] = useState<Analytics[]>([]);
+  const [userActivities, setUserActivities] = useState<UserActivity[]>([]);
 
   useEffect(() => {
     if (!authLoading && (!user || !isAdmin)) {
@@ -61,8 +64,63 @@ export default function AnalyticsPage() {
       }
     );
 
-    // Cleanup listener on unmount
-    return () => unsubscribe();
+    // Set up real-time listener for recent activity
+    const activityQuery = query(
+      collection(db, 'analytics'),
+      orderBy('timestamp', 'desc'),
+      limit(20)
+    );
+
+    const unsubscribeActivity = onSnapshot(
+      activityQuery,
+      (snapshot) => {
+        const activityData: Analytics[] = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...data,
+            timestamp: data.timestamp instanceof Timestamp ? data.timestamp.toDate() : new Date(data.timestamp),
+          } as Analytics;
+        });
+        setRecentActivity(activityData);
+      },
+      (error) => {
+        console.error('Error loading activity:', error);
+      }
+    );
+
+    // Set up real-time listener for user activities
+    const userActivityQuery = query(
+      collection(db, 'userActivity'),
+      orderBy('lastActive', 'desc'),
+      limit(10)
+    );
+
+    const unsubscribeUserActivity = onSnapshot(
+      userActivityQuery,
+      (snapshot) => {
+        const userData: UserActivity[] = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...data,
+            lastActive: data.lastActive instanceof Timestamp ? data.lastActive.toDate() : new Date(data.lastActive),
+            joinedAt: data.joinedAt instanceof Timestamp ? data.joinedAt.toDate() : new Date(data.joinedAt),
+          } as UserActivity;
+        });
+        setUserActivities(userData);
+      },
+      (error) => {
+        console.error('Error loading user activities:', error);
+      }
+    );
+
+    // Cleanup listeners on unmount
+    return () => {
+      unsubscribe();
+      unsubscribeActivity();
+      unsubscribeUserActivity();
+    };
   }, [user, isAdmin]);
 
   // Compute summary from real-time posts data
@@ -355,6 +413,124 @@ export default function AnalyticsPage() {
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Avg Likes per Post</div>
               </div>
+            </div>
+          </div>
+
+          {/* User Activity & Recent Activity */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            {/* Active Users */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <UserGroupIcon className="h-6 w-6 text-purple-600" />
+                Active Users
+              </h2>
+
+              {userActivities.length === 0 ? (
+                <p className="text-gray-600 dark:text-gray-400 text-center py-8">
+                  No user activity yet
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {userActivities.map((userActivity) => (
+                    <div
+                      key={userActivity.id}
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      {userActivity.userPhoto ? (
+                        <img
+                          src={userActivity.userPhoto}
+                          alt={userActivity.userName}
+                          className="w-10 h-10 rounded-full"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold">
+                          {userActivity.userName?.charAt(0).toUpperCase() || '?'}
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                          {userActivity.userName || 'Anonymous'}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Last active: {format(userActivity.lastActive, 'MMM d, h:mm a')}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                        <span className="flex items-center gap-1">
+                          <EyeIcon className="h-3 w-3" />
+                          {userActivity.totalViews || 0}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <HeartIcon className="h-3 w-3" />
+                          {userActivity.totalLikes || 0}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <ChatBubbleLeftIcon className="h-3 w-3" />
+                          {userActivity.totalComments || 0}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Recent Activity Feed */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <ClockIcon className="h-6 w-6 text-green-600" />
+                Recent Activity
+              </h2>
+
+              {recentActivity.length === 0 ? (
+                <p className="text-gray-600 dark:text-gray-400 text-center py-8">
+                  No recent activity
+                </p>
+              ) : (
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {recentActivity.map((activity) => (
+                    <div
+                      key={activity.id}
+                      className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700"
+                    >
+                      <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white ${
+                        activity.event === 'view' ? 'bg-blue-500' :
+                        activity.event === 'like' ? 'bg-red-500' :
+                        activity.event === 'comment' ? 'bg-green-500' :
+                        activity.event === 'login' ? 'bg-purple-500' :
+                        'bg-gray-500'
+                      }`}>
+                        {activity.event === 'view' && <EyeIcon className="h-4 w-4" />}
+                        {activity.event === 'like' && <HeartIcon className="h-4 w-4" />}
+                        {activity.event === 'comment' && <ChatBubbleLeftIcon className="h-4 w-4" />}
+                        {activity.event === 'login' && <UserGroupIcon className="h-4 w-4" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-900 dark:text-gray-100">
+                          <span className="font-medium">{activity.userName || 'Someone'}</span>
+                          {' '}
+                          {activity.event === 'view' && 'viewed'}
+                          {activity.event === 'like' && 'liked'}
+                          {activity.event === 'comment' && 'commented on'}
+                          {activity.event === 'login' && 'logged in'}
+                          {activity.postTitle && (
+                            <>
+                              {' '}
+                              <span className="font-medium text-blue-600 dark:text-blue-400">
+                                {activity.postTitle}
+                              </span>
+                            </>
+                          )}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {format(activity.timestamp, 'MMM d, h:mm a')}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

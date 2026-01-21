@@ -8,13 +8,15 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRecaptcha } from '@/hooks/useRecaptcha';
 import { Comment } from '@/types';
 import { createComment } from '@/lib/firebase/comments';
+import { trackUserActivity } from '@/lib/firebase/analytics';
 import toast from 'react-hot-toast';
 
 interface CommentSectionProps {
   postId: string;
+  postTitle?: string;
 }
 
-export default function CommentSection({ postId }: CommentSectionProps) {
+export default function CommentSection({ postId, postTitle }: CommentSectionProps) {
   const { user } = useAuth();
   const { executeRecaptcha, isConfigured: recaptchaConfigured } = useRecaptcha();
   const [comments, setComments] = useState<Comment[]>([]);
@@ -108,6 +110,9 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     if (error) {
       toast.error('Error posting comment');
     } else if (id) {
+      // Track comment activity
+      trackUserActivity(user, 'comment', postId, postTitle);
+
       toast.success('Comment submitted! It will appear after approval.');
       setContent('');
     }

@@ -180,8 +180,27 @@ service cloud.firestore {
 
       function validateAnalytics() {
         let data = request.resource.data;
-        return data.event in ['view', 'like', 'comment', 'share'] &&
-               data.timestamp == request.time;
+        return data.event in ['view', 'like', 'comment', 'share', 'login', 'signup'] &&
+               data.timestamp == request.time &&
+               data.userId == request.auth.uid;
+      }
+    }
+
+    // =============================================
+    // User Activity Tracking
+    // =============================================
+    match /userActivity/{userId} {
+      // Admins can read all user activity
+      allow read: if isAdmin();
+      // Users can read their own activity
+      allow get: if isOwner(userId);
+      // Users can create/update their own activity record
+      allow create, update: if isOwner(userId) && validateUserActivity();
+      allow delete: if isAdmin();
+
+      function validateUserActivity() {
+        let data = request.resource.data;
+        return data.userId == request.auth.uid;
       }
     }
 

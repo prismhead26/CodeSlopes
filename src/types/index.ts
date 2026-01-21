@@ -81,11 +81,29 @@ export interface AIResponse {
 }
 
 export interface Analytics {
+  id?: string;
   postId?: string;
-  event: 'view' | 'like' | 'comment' | 'share';
+  postTitle?: string;
+  event: 'view' | 'like' | 'comment' | 'share' | 'login' | 'signup';
   timestamp: Date;
   userId?: string;
+  userName?: string;
+  userEmail?: string;
+  userPhoto?: string;
   metadata?: Record<string, unknown>;
+}
+
+export interface UserActivity {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  userPhoto?: string;
+  lastActive: Date;
+  totalViews: number;
+  totalLikes: number;
+  totalComments: number;
+  joinedAt: Date;
 }
 
 export interface Tutorial {

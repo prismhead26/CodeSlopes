@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { getPostBySlug, incrementPostViews, incrementPostLikes } from '@/lib/firebase/posts';
+import { trackUserActivity } from '@/lib/firebase/analytics';
 import { BlogPost } from '@/types';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -55,6 +56,13 @@ export default function BlogPostClient() {
     }
   }, [slug]);
 
+  // Track user view activity when user is available
+  useEffect(() => {
+    if (user && post) {
+      trackUserActivity(user, 'view', post.id, post.title);
+    }
+  }, [user, post]);
+
   const handleLike = async () => {
     if (!post) return;
 
@@ -76,6 +84,9 @@ export default function BlogPostClient() {
     } else {
       setLiked(true);
       setLikeCount((prev) => prev + 1);
+
+      // Track like activity
+      trackUserActivity(user, 'like', post.id, post.title);
 
       // Store in localStorage to prevent multiple likes
       const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '{}');
@@ -212,7 +223,7 @@ export default function BlogPostClient() {
           </div>
 
           {/* Comments Section */}
-          <CommentSection postId={post.id} />
+          <CommentSection postId={post.id} postTitle={post.title} />
         </article>
       </main>
       <Footer />
