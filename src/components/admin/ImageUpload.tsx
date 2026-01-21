@@ -1,10 +1,29 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/lib/firebase/config';
 import { PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
+
+/**
+ * Validates that a URL is safe for use in an img src attribute
+ * Only allows data: URLs (from FileReader) and https: URLs (from Firebase Storage)
+ */
+function isValidImageUrl(url: string): boolean {
+  if (!url) return false;
+
+  // Allow data URLs (from FileReader.readAsDataURL)
+  if (url.startsWith('data:image/')) return true;
+
+  // Allow HTTPS URLs only
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
 
 interface ImageUploadProps {
   onUploadComplete: (url: string) => void;
@@ -17,6 +36,11 @@ export default function ImageUpload({ onUploadComplete, currentImage, folder = '
   const [uploadProgress, setUploadProgress] = useState(0);
   const [previewUrl, setPreviewUrl] = useState(currentImage || '');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Validate previewUrl before rendering to prevent XSS
+  const safePreviewUrl = useMemo(() => {
+    return isValidImageUrl(previewUrl) ? previewUrl : '';
+  }, [previewUrl]);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -109,7 +133,7 @@ export default function ImageUpload({ onUploadComplete, currentImage, folder = '
           {uploading ? 'Uploading...' : 'Upload Image'}
         </label>
 
-        {previewUrl && !uploading && (
+        {safePreviewUrl && !uploading && (
           <button
             type="button"
             onClick={handleRemove}
@@ -132,10 +156,10 @@ export default function ImageUpload({ onUploadComplete, currentImage, folder = '
       )}
 
       {/* Image Preview */}
-      {previewUrl && (
+      {safePreviewUrl && (
         <div className="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4">
           <img
-            src={previewUrl}
+            src={safePreviewUrl}
             alt="Preview"
             className="max-h-64 mx-auto rounded-lg object-contain"
           />

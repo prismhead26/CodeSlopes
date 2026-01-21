@@ -160,14 +160,9 @@ export function validateBlogPost(post: BlogPostInput): void {
 
 /**
  * Sanitize HTML to prevent XSS
+ * @deprecated Use sanitizeHtml from '@/lib/security/sanitize' instead for proper DOMPurify-based sanitization
  */
-export function sanitizeHtml(html: string): string {
-  // Basic sanitization - in production, use a library like DOMPurify
-  return html
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/javascript:/gi, '')
-    .replace(/on\w+\s*=/gi, '');
-}
+export { sanitizeHtml } from '@/lib/security/sanitize';
 
 /**
  * Validate file upload
