@@ -42,7 +42,10 @@ jobs:
         run: |
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}' > service-account.json
 
-      - name: Deploy to Firebase
+      - name: Run security audit
+        run: npm audit --audit-level=high || true
+
+      - name: Deploy to Firebase (Hosting, Firestore, Storage)
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ./service-account.json
-        run: firebase deploy --except storage --force
+        run: firebase deploy --force

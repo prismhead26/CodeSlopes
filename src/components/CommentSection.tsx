@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { useAuth } from '@/hooks/useAuth';
+import { useRecaptcha } from '@/hooks/useRecaptcha';
 import { Comment } from '@/types';
 import { createComment } from '@/lib/firebase/comments';
 import toast from 'react-hot-toast';
@@ -15,6 +16,7 @@ interface CommentSectionProps {
 
 export default function CommentSection({ postId }: CommentSectionProps) {
   const { user } = useAuth();
+  const { executeRecaptcha, isConfigured: recaptchaConfigured } = useRecaptcha();
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState('');
@@ -62,6 +64,35 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     }
 
     setSubmitting(true);
+
+    // Verify reCAPTCHA if configured
+    if (recaptchaConfigured) {
+      try {
+        const recaptchaToken = await executeRecaptcha('submit_comment');
+
+        if (recaptchaToken) {
+          const verifyResponse = await fetch('/api/verify-recaptcha', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              token: recaptchaToken,
+              action: 'submit_comment'
+            }),
+          });
+
+          const verifyResult = await verifyResponse.json();
+
+          if (!verifyResult.verified && !verifyResult.skipped) {
+            toast.error('Security verification failed. Please try again.');
+            setSubmitting(false);
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('reCAPTCHA verification error:', error);
+        // Continue without blocking if verification fails
+      }
+    }
 
     const commentData = {
       postId,
