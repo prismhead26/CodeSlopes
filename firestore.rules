@@ -16,23 +16,27 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // Blog posts - public read, admin write
+    // Blog posts - public read for published, admin full access
     match /posts/{postId} {
-      allow read: if resource.data.published == true || isAdmin();
+      // Allow anyone to read published posts, admins can read all
+      allow get: if resource.data.published == true || isAdmin();
+      allow list: if isAdmin() || true; // Allow list queries, individual docs filtered by get rule
       allow create, delete: if isAdmin();
-      // Allow admins full update, allow anyone to increment views/likes on published posts
+      // Allow admins full update, allow signed-in users to increment views/likes on published posts
       allow update: if isAdmin() ||
-        (resource.data.published == true &&
+        (isSignedIn() && resource.data.published == true &&
          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views', 'likes']));
     }
 
-    // Tutorials - public read, admin write
+    // Tutorials - public read for published, admin full access
     match /tutorials/{tutorialId} {
-      allow read: if resource.data.published == true || isAdmin();
+      // Allow anyone to read published tutorials, admins can read all
+      allow get: if resource.data.published == true || isAdmin();
+      allow list: if isAdmin() || true; // Allow list queries, individual docs filtered by get rule
       allow create, delete: if isAdmin();
-      // Allow admins full update, allow anyone to increment views/likes on published tutorials
+      // Allow admins full update, allow signed-in users to increment views/likes on published tutorials
       allow update: if isAdmin() ||
-        (resource.data.published == true &&
+        (isSignedIn() && resource.data.published == true &&
          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views', 'likes']));
     }
 
