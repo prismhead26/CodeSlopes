@@ -12,7 +12,7 @@ test.describe('Theme Toggle', () => {
 
     // Get initial theme
     const htmlElement = page.locator('html');
-    const initialHasD arkClass = await htmlElement.evaluate((el) =>
+    const initialHasDarkClass = await htmlElement.evaluate((el) =>
       el.classList.contains('dark')
     );
 
