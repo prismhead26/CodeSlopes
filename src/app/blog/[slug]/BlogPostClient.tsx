@@ -90,7 +90,7 @@ export default function BlogPostClient() {
 
           <div className="flex items-center gap-2 mb-4">
             <span className="px-3 py-1 text-sm font-semibold bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">
-              {post.category}
+              {post.categoryName || post.category}
             </span>
             <span className="text-sm text-gray-500 dark:text-gray-400">
               {post.readingTime} min read

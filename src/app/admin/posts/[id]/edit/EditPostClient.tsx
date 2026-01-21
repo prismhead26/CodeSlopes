@@ -94,12 +94,17 @@ export default function EditPostClient() {
 
     const readingTime = calculateReadingTime(content);
 
+    // Find category name from selected category slug
+    const selectedCategory = categories.find(c => c.slug === category);
+    const categoryName = selectedCategory?.name || category;
+
     const postData = {
       title,
       slug,
       content,
       excerpt,
       category,
+      categoryName,
       tags: tagArray,
       coverImage: coverImage || null,
       published,

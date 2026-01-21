@@ -18,8 +18,24 @@ import {
 } from 'firebase/firestore';
 import { db } from './config';
 import { BlogPost } from '@/types';
+import { getCategoryBySlug } from './categories';
 
 const postsCollection = collection(db, 'posts');
+
+// Helper to update category post count
+const updateCategoryCount = async (categorySlug: string, delta: number) => {
+  try {
+    const { category } = await getCategoryBySlug(categorySlug);
+    if (category) {
+      const categoryRef = doc(db, 'categories', category.id);
+      await updateDoc(categoryRef, {
+        postCount: increment(delta),
+      });
+    }
+  } catch (error) {
+    console.error('Error updating category count:', error);
+  }
+};
 
 // Convert Firestore timestamp to Date
 const convertTimestamp = (data: DocumentData): BlogPost => {
@@ -42,6 +58,11 @@ export const createPost = async (postData: Omit<BlogPost, 'id' | 'createdAt' | '
       views: 0,
       likes: 0,
     });
+
+    // Update category post count
+    if (postData.category) {
+      await updateCategoryCount(postData.category, 1);
+    }
 
     return { id: docRef.id, error: null };
   } catch (error) {
@@ -70,7 +91,17 @@ export const updatePost = async (id: string, postData: Partial<BlogPost>) => {
 
 export const deletePost = async (id: string) => {
   try {
+    // Get the post first to know its category
+    const postDoc = await getDoc(doc(db, 'posts', id));
+    const postData = postDoc.data();
+
     await deleteDoc(doc(db, 'posts', id));
+
+    // Update category post count
+    if (postData?.category) {
+      await updateCategoryCount(postData.category, -1);
+    }
+
     return { error: null };
   } catch (error) {
     return { error: error as Error };

@@ -16,6 +16,7 @@ export interface BlogPost {
   excerpt: string;
   coverImage?: string | null;
   category: string;
+  categoryName?: string;
   tags: string[];
   published: boolean;
   publishedAt?: Date;

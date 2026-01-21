@@ -21,7 +21,8 @@
       "Bash(git push:*)",
       "Bash(firebase login:ci:*)",
       "Bash(echo:*)",
-      "Bash(gh --version:*)"
+      "Bash(gh --version:*)",
+      "Bash(gh run list:*)"
     ]
   }
 }
