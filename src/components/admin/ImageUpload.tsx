@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/lib/firebase/config';
 import { PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -8,18 +8,15 @@ import toast from 'react-hot-toast';
 
 /**
  * Validates that a URL is safe for use in an img src attribute
- * Only allows data: URLs (from FileReader) and https: URLs (from Firebase Storage)
+ * Only allows blob: URLs (from createObjectURL) and https: URLs (from Firebase Storage)
  */
 function isValidImageUrl(url: string): boolean {
   if (!url) return false;
 
-  // Allow data URLs (from FileReader.readAsDataURL)
-  if (url.startsWith('data:image/')) return true;
-
-  // Allow HTTPS URLs only
   try {
     const parsed = new URL(url);
-    return parsed.protocol === 'https:';
+    // Only allow blob: (local previews) and https: (Firebase Storage)
+    return parsed.protocol === 'blob:' || parsed.protocol === 'https:';
   } catch {
     return false;
   }
@@ -34,13 +31,25 @@ interface ImageUploadProps {
 export default function ImageUpload({ onUploadComplete, currentImage, folder = 'images' }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [previewUrl, setPreviewUrl] = useState(currentImage || '');
+  const [previewUrl, setPreviewUrl] = useState<string>('');
+  const [blobUrl, setBlobUrl] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Validate previewUrl before rendering to prevent XSS
-  const safePreviewUrl = useMemo(() => {
-    return isValidImageUrl(previewUrl) ? previewUrl : '';
-  }, [previewUrl]);
+  // Set initial preview from currentImage (https URL from Firebase)
+  useEffect(() => {
+    if (currentImage && isValidImageUrl(currentImage)) {
+      setPreviewUrl(currentImage);
+    }
+  }, [currentImage]);
+
+  // Cleanup blob URL on unmount or when it changes
+  useEffect(() => {
+    return () => {
+      if (blobUrl) {
+        URL.revokeObjectURL(blobUrl);
+      }
+    };
+  }, [blobUrl]);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -58,12 +67,15 @@ export default function ImageUpload({ onUploadComplete, currentImage, folder = '
       return;
     }
 
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreviewUrl(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+    // Revoke previous blob URL if exists
+    if (blobUrl) {
+      URL.revokeObjectURL(blobUrl);
+    }
+
+    // Create secure blob URL for preview (inherently safe, no XSS risk)
+    const newBlobUrl = URL.createObjectURL(file);
+    setBlobUrl(newBlobUrl);
+    setPreviewUrl(newBlobUrl);
 
     // Upload to Firebase Storage
     setUploading(true);
@@ -103,6 +115,11 @@ export default function ImageUpload({ onUploadComplete, currentImage, folder = '
   };
 
   const handleRemove = () => {
+    // Revoke blob URL to free memory
+    if (blobUrl) {
+      URL.revokeObjectURL(blobUrl);
+      setBlobUrl('');
+    }
     setPreviewUrl('');
     onUploadComplete('');
     if (fileInputRef.current) {
@@ -133,7 +150,7 @@ export default function ImageUpload({ onUploadComplete, currentImage, folder = '
           {uploading ? 'Uploading...' : 'Upload Image'}
         </label>
 
-        {safePreviewUrl && !uploading && (
+        {previewUrl && !uploading && (
           <button
             type="button"
             onClick={handleRemove}
@@ -155,11 +172,11 @@ export default function ImageUpload({ onUploadComplete, currentImage, folder = '
         </div>
       )}
 
-      {/* Image Preview */}
-      {safePreviewUrl && (
+      {/* Image Preview - Uses blob: URLs (from createObjectURL) or https: URLs (from Firebase) */}
+      {previewUrl && isValidImageUrl(previewUrl) && (
         <div className="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4">
           <img
-            src={safePreviewUrl}
+            src={previewUrl}
             alt="Preview"
             className="max-h-64 mx-auto rounded-lg object-contain"
           />
