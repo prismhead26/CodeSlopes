@@ -19,13 +19,21 @@ service cloud.firestore {
     // Blog posts - public read, admin write
     match /posts/{postId} {
       allow read: if resource.data.published == true || isAdmin();
-      allow create, update, delete: if isAdmin();
+      allow create, delete: if isAdmin();
+      // Allow admins full update, allow anyone to increment views/likes on published posts
+      allow update: if isAdmin() ||
+        (resource.data.published == true &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views', 'likes']));
     }
 
     // Tutorials - public read, admin write
     match /tutorials/{tutorialId} {
       allow read: if resource.data.published == true || isAdmin();
-      allow create, update, delete: if isAdmin();
+      allow create, delete: if isAdmin();
+      // Allow admins full update, allow anyone to increment views/likes on published tutorials
+      allow update: if isAdmin() ||
+        (resource.data.published == true &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views', 'likes']));
     }
 
     // Categories - public read, admin write
