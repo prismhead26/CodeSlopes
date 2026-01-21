@@ -3,20 +3,28 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
-import { getPostBySlug, incrementPostViews } from '@/lib/firebase/posts';
+import { getPostBySlug, incrementPostViews, incrementPostLikes } from '@/lib/firebase/posts';
 import { BlogPost } from '@/types';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CommentSection from '@/components/CommentSection';
 import { format } from 'date-fns';
+import { HeartIcon } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
+import { useAuth } from '@/hooks/useAuth';
+import toast from 'react-hot-toast';
 
 export default function BlogPostClient() {
   const params = useParams();
   const slug = params.slug as string;
+  const { user } = useAuth();
 
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [liking, setLiking] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -27,6 +35,14 @@ export default function BlogPostClient() {
         setError(error.message);
       } else if (post) {
         setPost(post);
+        setLikeCount(post.likes || 0);
+
+        // Check if user already liked this post (stored in localStorage)
+        const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '{}');
+        if (likedPosts[post.id]) {
+          setLiked(true);
+        }
+
         // Increment view count
         await incrementPostViews(post.id);
       }
@@ -38,6 +54,39 @@ export default function BlogPostClient() {
       fetchPost();
     }
   }, [slug]);
+
+  const handleLike = async () => {
+    if (!post) return;
+
+    if (!user) {
+      toast.error('Please sign in to like posts');
+      return;
+    }
+
+    if (liked) {
+      toast('You already liked this post!', { icon: '❤️' });
+      return;
+    }
+
+    setLiking(true);
+    const { error } = await incrementPostLikes(post.id);
+
+    if (error) {
+      toast.error('Failed to like post');
+    } else {
+      setLiked(true);
+      setLikeCount((prev) => prev + 1);
+
+      // Store in localStorage to prevent multiple likes
+      const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '{}');
+      likedPosts[post.id] = true;
+      localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
+
+      toast.success('Thanks for the love!');
+    }
+
+    setLiking(false);
+  };
 
   if (loading) {
     return (
@@ -88,7 +137,7 @@ export default function BlogPostClient() {
             </div>
           )}
 
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-3 mb-4 flex-wrap">
             <span className="px-3 py-1 text-sm font-semibold bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">
               {post.categoryName || post.category}
             </span>
@@ -97,6 +146,9 @@ export default function BlogPostClient() {
             </span>
             <span className="text-sm text-gray-500 dark:text-gray-400">
               👁️ {post.views} views
+            </span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              ❤️ {likeCount} likes
             </span>
           </div>
 
@@ -123,6 +175,24 @@ export default function BlogPostClient() {
                 </time>
               </div>
             </div>
+
+            {/* Like Button */}
+            <button
+              onClick={handleLike}
+              disabled={liking}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${
+                liked
+                  ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500'
+              } ${liking ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              {liked ? (
+                <HeartIconSolid className="h-5 w-5 text-red-500" />
+              ) : (
+                <HeartIcon className="h-5 w-5" />
+              )}
+              <span className="font-medium">{likeCount}</span>
+            </button>
           </div>
 
           <div
