@@ -1,28 +1,6 @@
 {
   "indexes": [
     {
-      "collectionGroup": "analytics",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "timestamp", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "analytics",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "userId", "order": "ASCENDING" },
-        { "fieldPath": "timestamp", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "userActivity",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "lastActive", "order": "DESCENDING" }
-      ]
-    },
-    {
       "collectionGroup": "posts",
       "queryScope": "COLLECTION",
       "fields": [
