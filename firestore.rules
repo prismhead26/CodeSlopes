@@ -181,7 +181,6 @@ service cloud.firestore {
       function validateAnalytics() {
         let data = request.resource.data;
         return data.event in ['view', 'like', 'comment', 'share', 'login', 'signup'] &&
-               data.timestamp == request.time &&
                data.userId == request.auth.uid;
       }
     }
