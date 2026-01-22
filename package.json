@@ -19,7 +19,8 @@
     "firebase:deploy": "npx firebase deploy",
     "firebase:deploy:rules": "npx firebase deploy --only firestore:rules",
     "deploy:preview": "firebase hosting:channel:deploy preview",
-    "deploy:production": "firebase deploy --only hosting"
+    "deploy:production": "firebase deploy --only hosting",
+    "seed:tutorials": "npx ts-node --project tsconfig.seed.json scripts/seed-tutorials.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -58,12 +59,14 @@
     "@typescript-eslint/eslint-plugin": "^8.50.1",
     "@typescript-eslint/parser": "^8.50.1",
     "autoprefixer": "^10.4.23",
+    "dotenv": "^16.6.1",
     "eslint": "^8.57.1",
     "eslint-config-next": "15.5.7",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
+    "ts-node": "^10.9.2",
     "typescript": "^5.7.2"
   }
 }
