@@ -34,7 +34,6 @@ const defaultSettings: Omit<SiteSettings, 'id'> = {
     github: '',
     linkedin: '',
     twitter: '',
-    instagram: '',
   },
   seo: {
     metaDescription: 'Tech and lifestyle blog covering software engineering, AI, and Colorado adventures.',

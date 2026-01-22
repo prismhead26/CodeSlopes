@@ -38,7 +38,6 @@ export default function SettingsPage() {
       github: '',
       linkedin: '',
       twitter: '',
-      instagram: '',
     },
     seo: {
       metaDescription: '',
@@ -312,22 +311,7 @@ export default function SettingsPage() {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Instagram</label>
-                    <input
-                      type="url"
-                      value={formData.social?.instagram || ''}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          social: { ...formData.social!, instagram: e.target.value },
-                        })
-                      }
-                      placeholder="https://instagram.com/username"
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent dark:bg-gray-800"
-                    />
                   </div>
-                </div>
               )}
 
               {/* SEO Tab */}

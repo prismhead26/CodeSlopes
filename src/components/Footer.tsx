@@ -3,17 +3,25 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getCategories } from '@/lib/firebase/categories';
-import { Category } from '@/types';
+import { getSettings } from '@/lib/firebase/settings';
+import { Category, SiteSettings } from '@/types';
 
 export default function Footer() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [settings, setSettings] = useState<SiteSettings | null>(null);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      const { categories: fetchedCategories } = await getCategories();
-      setCategories(fetchedCategories);
+    const fetchData = async () => {
+      const [categoriesResult, settingsResult] = await Promise.all([
+        getCategories(),
+        getSettings()
+      ]);
+      setCategories(categoriesResult.categories);
+      if (settingsResult.settings) {
+        setSettings(settingsResult.settings);
+      }
     };
-    fetchCategories();
+    fetchData();
   }, []);
 
   return (
@@ -90,36 +98,47 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Connect</h4>
             <ul className="space-y-2 text-sm">
-              <li>
-                <a
-                  href="https://github.com/prismhead26/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600"
-                >
-                  GitHub
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.linkedin.com/in/aiden-wahed-a78539227"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600"
-                >
-                  LinkedIn
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://x.com/Count_Spockula"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600"
-                >
-                  Twitter / X
-                </a>
-              </li>
+              {settings?.social?.github && (
+                <li>
+                  <a
+                    href={settings.social.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-600 dark:text-gray-400 hover:text-blue-600"
+                  >
+                    GitHub
+                  </a>
+                </li>
+              )}
+              {settings?.social?.linkedin && (
+                <li>
+                  <a
+                    href={settings.social.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-600 dark:text-gray-400 hover:text-blue-600"
+                  >
+                    LinkedIn
+                  </a>
+                </li>
+              )}
+              {settings?.social?.twitter && (
+                <li>
+                  <a
+                    href={settings.social.twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-600 dark:text-gray-400 hover:text-blue-600"
+                  >
+                    Twitter / X
+                  </a>
+                </li>
+              )}
+              {!settings?.social?.github && !settings?.social?.linkedin && !settings?.social?.twitter && (
+                <li className="text-gray-500 dark:text-gray-500 italic">
+                  No social links configured
+                </li>
+              )}
             </ul>
           </div>
         </div>

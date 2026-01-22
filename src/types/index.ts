@@ -144,7 +144,6 @@ export interface SiteSettings {
     github?: string;
     linkedin?: string;
     twitter?: string;
-    instagram?: string;
   };
   seo: {
     metaDescription: string;

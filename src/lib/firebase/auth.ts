@@ -12,12 +12,15 @@ import {
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from './config';
 import { User } from '@/types';
+import { trackUserActivity } from './analytics';
 
 const googleProvider = new GoogleAuthProvider();
 
 export const signIn = async (email: string, password: string) => {
   try {
     const result = await signInWithEmailAndPassword(auth, email, password);
+    // Track login activity
+    trackUserActivity(result.user, 'login');
     return { user: result.user, error: null };
   } catch (error) {
     return { user: null, error: error as Error };
@@ -39,6 +42,9 @@ export const signUp = async (email: string, password: string, displayName: strin
 
     await setDoc(doc(db, 'users', result.user.uid), userData);
 
+    // Track signup activity
+    trackUserActivity({ ...result.user, displayName }, 'signup');
+
     return { user: result.user, error: null };
   } catch (error) {
     return { user: null, error: error as Error };
@@ -53,7 +59,8 @@ export const signInWithGoogle = async () => {
     const userRef = doc(db, 'users', result.user.uid);
     const userDoc = await getDoc(userRef);
 
-    if (!userDoc.exists()) {
+    const isNewUser = !userDoc.exists();
+    if (isNewUser) {
       const userData: Omit<User, 'uid'> = {
         email: result.user.email!,
         displayName: result.user.displayName || 'Anonymous',
@@ -63,6 +70,9 @@ export const signInWithGoogle = async () => {
       };
       await setDoc(userRef, userData);
     }
+
+    // Track login or signup activity
+    trackUserActivity(result.user, isNewUser ? 'signup' : 'login');
 
     return { user: result.user, error: null };
   } catch (error) {

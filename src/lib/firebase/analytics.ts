@@ -13,6 +13,7 @@ import {
   Timestamp,
   DocumentData,
   increment,
+  serverTimestamp,
 } from 'firebase/firestore';
 import { db } from './config';
 import { Analytics, UserActivity } from '@/types';
@@ -41,7 +42,7 @@ export const logAnalyticsEvent = async (eventData: Omit<Analytics, 'id' | 'times
   try {
     const docRef = await addDoc(analyticsCollection, {
       ...eventData,
-      timestamp: Timestamp.now(),
+      timestamp: serverTimestamp(),
     });
 
     return { id: docRef.id, error: null };
@@ -190,15 +191,16 @@ export const trackUserActivity = async (
 ) => {
   try {
     // Log analytics event with user info
+    // Use serverTimestamp() to match Firestore rules that require timestamp == request.time
     await addDoc(analyticsCollection, {
       event,
-      postId,
-      postTitle,
+      postId: postId || null,
+      postTitle: postTitle || null,
       userId: user.uid,
       userName: user.displayName || 'Anonymous',
       userEmail: user.email || '',
       userPhoto: user.photoURL || null,
-      timestamp: Timestamp.now(),
+      timestamp: serverTimestamp(),
     });
 
     // Update user activity record
@@ -208,7 +210,7 @@ export const trackUserActivity = async (
     if (userActivityDoc.exists()) {
       // Update existing record
       const updateData: Record<string, unknown> = {
-        lastActive: Timestamp.now(),
+        lastActive: serverTimestamp(),
         userName: user.displayName || 'Anonymous',
         userEmail: user.email || '',
         userPhoto: user.photoURL || null,
@@ -227,8 +229,8 @@ export const trackUserActivity = async (
         userName: user.displayName || 'Anonymous',
         userEmail: user.email || '',
         userPhoto: user.photoURL || null,
-        lastActive: Timestamp.now(),
-        joinedAt: Timestamp.now(),
+        lastActive: serverTimestamp(),
+        joinedAt: serverTimestamp(),
         totalViews: event === 'view' ? 1 : 0,
         totalLikes: event === 'like' ? 1 : 0,
         totalComments: event === 'comment' ? 1 : 0,
