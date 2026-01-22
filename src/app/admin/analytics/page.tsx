@@ -86,6 +86,7 @@ export default function AnalyticsPage() {
       },
       (error) => {
         console.error('Error loading activity:', error);
+        toast.error(`Error loading recent activity: ${error.message}`);
       }
     );
 
@@ -112,6 +113,7 @@ export default function AnalyticsPage() {
       },
       (error) => {
         console.error('Error loading user activities:', error);
+        toast.error(`Error loading user activities: ${error.message}`);
       }
     );
 
