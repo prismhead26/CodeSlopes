@@ -50,4 +50,4 @@ jobs:
       - name: Deploy to Firebase (Hosting, Firestore, Functions, Storage)
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ./service-account.json
-        run: firebase deploy --only hosting,firestore:rules,functions,storage --force
+        run: firebase deploy --only hosting,firestore,functions,storage --force

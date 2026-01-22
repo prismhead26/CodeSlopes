@@ -19,8 +19,10 @@ const googleProvider = new GoogleAuthProvider();
 export const signIn = async (email: string, password: string) => {
   try {
     const result = await signInWithEmailAndPassword(auth, email, password);
-    // Track login activity
-    trackUserActivity(result.user, 'login');
+    // Track login activity (don't await to avoid blocking sign-in)
+    trackUserActivity(result.user, 'login').catch(err =>
+      console.error('Failed to track login:', err)
+    );
     return { user: result.user, error: null };
   } catch (error) {
     return { user: null, error: error as Error };
@@ -42,8 +44,10 @@ export const signUp = async (email: string, password: string, displayName: strin
 
     await setDoc(doc(db, 'users', result.user.uid), userData);
 
-    // Track signup activity
-    trackUserActivity({ ...result.user, displayName }, 'signup');
+    // Track signup activity (don't await to avoid blocking sign-up)
+    trackUserActivity({ ...result.user, displayName }, 'signup').catch(err =>
+      console.error('Failed to track signup:', err)
+    );
 
     return { user: result.user, error: null };
   } catch (error) {
@@ -71,8 +75,10 @@ export const signInWithGoogle = async () => {
       await setDoc(userRef, userData);
     }
 
-    // Track login or signup activity
-    trackUserActivity(result.user, isNewUser ? 'signup' : 'login');
+    // Track login or signup activity (don't await to avoid blocking sign-in)
+    trackUserActivity(result.user, isNewUser ? 'signup' : 'login').catch(err =>
+      console.error('Failed to track auth activity:', err)
+    );
 
     return { user: result.user, error: null };
   } catch (error) {
