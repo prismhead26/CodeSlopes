@@ -23,7 +23,8 @@
     "seed:tutorials": "npx ts-node --project tsconfig.seed.json scripts/seed-tutorials.ts",
     "seed:categories": "npx ts-node --project tsconfig.seed.json scripts/seed-categories.ts",
     "seed:recalculate": "npx ts-node --project tsconfig.seed.json scripts/recalculate-counts.ts",
-    "seed:all": "npm run seed:categories && npm run seed:tutorials && npm run seed:recalculate"
+    "seed:blog-tutorials": "npx ts-node --project tsconfig.seed.json scripts/seed-blog-tutorials.ts",
+    "seed:all": "npm run seed:categories && npm run seed:blog-tutorials && npm run seed:recalculate"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
