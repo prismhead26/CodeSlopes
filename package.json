@@ -20,7 +20,10 @@
     "firebase:deploy:rules": "npx firebase deploy --only firestore:rules",
     "deploy:preview": "firebase hosting:channel:deploy preview",
     "deploy:production": "firebase deploy --only hosting",
-    "seed:tutorials": "npx ts-node --project tsconfig.seed.json scripts/seed-tutorials.ts"
+    "seed:tutorials": "npx ts-node --project tsconfig.seed.json scripts/seed-tutorials.ts",
+    "seed:categories": "npx ts-node --project tsconfig.seed.json scripts/seed-categories.ts",
+    "seed:recalculate": "npx ts-node --project tsconfig.seed.json scripts/recalculate-counts.ts",
+    "seed:all": "npm run seed:categories && npm run seed:tutorials && npm run seed:recalculate"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
